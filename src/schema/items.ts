@@ -58,6 +58,9 @@ export const ItemResolver = {
 
 export const Item = builder
   .interfaceRef<ItemData>('Item')
+  .withPlan(ItemResolver);
+
+Item
   .implement({
     fields: (t) => ({
       id: t.exposeID('id', {
@@ -69,7 +72,6 @@ export const Item = builder
       }),
     }),
   })
-  .withPlan(ItemResolver.planType);
 
 export const HasInventory = builder.interfaceRef<{}>('HasInventory').implement({
   fields: (t) => ({

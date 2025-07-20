@@ -66,7 +66,7 @@ export function decodeItemSpec(itemSpec: ItemSpec): {
   __typename: string;
   id: number;
 } {
-  const [__typename, rawID] = itemSpec.split(':');
+  const [__typename, rawID] = itemSpec.split(':') as [string, string];
   const id = Number.parseInt(rawID, 10);
   return { __typename, id };
 }

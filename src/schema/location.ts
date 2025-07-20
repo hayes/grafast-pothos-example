@@ -18,24 +18,7 @@ import { Consumable, Equipment, ItemResolver, MiscItem, UtilityItem } from './it
 
 export const Location = builder
   .interfaceRef<LocationData>('Location')
-  .implement({
-    fields: (t) => ({
-      id: t.exposeID('id', {
-        nullable: false,
-      }),
-      name: t.exposeString('name', {
-        nullable: false,
-      }),
-      floors: t.field({
-        type: [Floor],
-        plan: ($place) => {
-          const $floors = get($place, 'floors') as Step<number[]>;
-          return each($floors, ($floor) => lambda($floor, getFloor));
-        },
-      }),
-    }),
-  })
-  .withPlan(($location) => {
+  .withPlan({planType: ($location) => {
     const $db = context().get('dccDb');
     const $__typename = get($location, 'type');
     return {
@@ -62,19 +45,39 @@ export const Location = builder
         return null;
       },
     };
-  });
+  }});
+
+Location
+  .implement({
+    fields: (t) => ({
+      id: t.exposeID('id', {
+        nullable: false,
+      }),
+      name: t.exposeString('name', {
+        nullable: false,
+      }),
+      floors: t.field({
+        type: [Floor],
+        plan: ($place) => {
+          const $floors = get($place, 'floors') as Step<number[]>;
+          return each($floors, ($floor) => lambda($floor, getFloor));
+        },
+      }),
+    }),
+  })
+
 
 export const SafeRoomStock = builder
   .unionType('SafeRoomStock', {
     types: [Consumable, MiscItem, Equipment],
   })
-  .withPlan(ItemResolver.planType);
+  .withPlan(ItemResolver);
 
 export const ClubStock = builder
   .unionType('ClubStock', {
     types: [Consumable, MiscItem, UtilityItem],
   })
-  .withPlan(ItemResolver.planType);
+  .withPlan(ItemResolver);
 
 export const SafeRoom = builder.objectRef<SafeRoomData & LocationData>('SafeRoom').implement({
   interfaces: [Location],
